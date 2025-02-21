@@ -9,7 +9,7 @@ import router from './router/index.js';
 import axios from "axios";
 
 axios.defaults.withCredentials = true; // Send cookies with every request
-axios.defaults.baseURL = "http://127.0.0.1:8000"; // Set the base URL for API requests
+axios.defaults.baseURL = "http://127.0.0.1:8000/api/v1"; // Set the base URL for API requests
 // Create the Vue app
 const app = createApp(App);
 

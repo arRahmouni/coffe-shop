@@ -68,6 +68,10 @@ class AuthService extends BaseApiService
     {
         $user = User::where('phone_number', $data['phone_number'])->first();
 
+        if(! $user) {
+            return sendFailInternalResponse('user_not_found');
+        }
+
         if(Hash::check($data['new_password'], $user->password)) {
             return sendFailInternalResponse('new_password_cannot_be_same_as_old_password');
         }
@@ -85,11 +89,9 @@ class AuthService extends BaseApiService
      * @param User $user
      * @return array
      */
-    public function logout($user): array
+    public function logout(User $user): array
     {
         $user->tokens()->delete();
-
-        $user->fcmTokens()->delete();
 
         return sendSuccessInternalResponse('logout_successfully');
     }
@@ -98,31 +100,13 @@ class AuthService extends BaseApiService
      * Create Api token
      *
      * @param User $user
-     * @param string $tokenName
      * @return TokenResource
      */
-    private function createToken($user): TokenResource
+    private function createToken(User $user): TokenResource
     {
-        $tokenName      = Str::random(20);
         $exiprationTime = Carbon::now()->addMinutes((int) config('sanctum.expiration'));
-        $token = $user->createToken($tokenName, ['*'], $exiprationTime);
+        $token          = $user->createToken($user->username, ['*'], $exiprationTime);
 
         return new TokenResource($token);
-    }
-
-    /**
-     * Check user for change password
-     *
-     * @param User $user
-     * @param string $password
-     * @return array
-     */
-    private function checkUserForChangePassword($user, $password): array
-    {
-        if(Hash::check($password, $user->password)) {
-            return sendFailInternalResponse('new_password_cannot_be_same_as_old_password');
-        }
-
-        return sendSuccessInternalResponse('can_change_password');
     }
 }

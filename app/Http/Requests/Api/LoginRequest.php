@@ -11,6 +11,7 @@ class LoginRequest extends BaseApiRequest
      */
     public function rules(): array
     {
+        // dd($this->all());
         return [
             'email'         => ['required', 'email', 'exists:users,email'],
             'password'      => ['required', 'string'],

@@ -1,35 +1,121 @@
 <template>
-    <div class="dashboard">
+    <div class="min-h-screen bg-gray-100">
         <!-- Navbar -->
-        <nav class="navbar">
-            <div class="navbar-brand">Dashboard</div>
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <router-link to="/dashboard" class="nav-link">Home</router-link>
-                </li>
-                <li class="nav-item">
-                    <router-link to="/dashboard/profile" class="nav-link">Profile</router-link>
-                </li>
-                <li class="nav-item">
-                    <router-link to="/dashboard/settings" class="nav-link">Settings</router-link>
-                </li>
-                <li class="nav-item">
-                    <button @click="handleLogout" class="nav-link logout-button">Logout</button>
-                </li>
-            </ul>
+        <nav class="bg-white shadow-sm">
+            <div class="mx-auto px-4">
+                <div class="flex justify-between h-16 items-center">
+                    <!-- Logo/Title -->
+                    <div class="flex items-center">
+                        <span class="text-xl font-bold text-gray-800"
+                            >Dashboard</span
+                        >
+                    </div>
+
+                    <!-- User Dropdown -->
+                    <div class="relative ml-3">
+                        <button
+                            @click="toggleDropdown"
+                            class="flex items-center space-x-2 focus:outline-none">
+                            <span class="text-gray-600">root@root.com</span>
+                            <svg
+                                class="w-4 h-4"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path
+                                    stroke-linecap="round"
+                                    stroke-linejoin="round"
+                                    stroke-width="2"
+                                    d="M19 9l-7 7-7-7"
+                                />
+                            </svg>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div
+                            v-show="isDropdownOpen"
+                            class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                        >
+                            <div class="py-1">
+                                <button
+                                    @click="handleLogout"
+                                    class="block w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                                >
+                                    Logout
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </nav>
 
-        <!-- Main Content -->
-        <div class="dashboard-content">
-            <router-view></router-view> <!-- Nested routes will be rendered here -->
+        <div class="flex">
+            <!-- Sidebar -->
+            <aside class="bg-white w-64 min-h-screen shadow-lg">
+                <div class="p-4">
+                    <!-- Logo -->
+                    <div class="mb-8">
+                        <h2 class="text-xl font-bold text-gray-800">My Store</h2>
+                    </div>
+
+                    <!-- Navigation -->
+                    <nav>
+                        <div class="mb-6">
+                            <h3
+                                class="text-sm font-semibold text-gray-500 mb-2"
+                            >
+                                Store Management
+                            </h3>
+                            <ul class="space-y-2">
+                                <li>
+                                    <a
+                                        href="#"
+                                        class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded"
+                                    >
+                                        Categories
+                                    </a>
+                                </li>
+                                <li>
+                                    <a
+                                        href="#"
+                                        class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded"
+                                    >
+                                        Products
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </nav>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="flex-1 p-8">
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h1 class="text-2xl font-bold mb-4">
+                        Welcome to the Dashboard
+                    </h1>
+                    <p class="text-gray-600">
+                        This is the home page of the dashboard.
+                    </p>
+                </div>
+            </main>
         </div>
     </div>
 </template>
 
 <script setup>
+    import { ref } from "vue";
     import { useRouter } from "vue-router";
     import { useToast } from "vue-toastification";
     import axios from "axios";
+
+    const isDropdownOpen = ref(false);
+
+    const toggleDropdown = () => {
+        isDropdownOpen.value = !isDropdownOpen.value;
+    };
 
     const router = useRouter();
     const toast = useToast();
@@ -37,70 +123,13 @@
     // Logout function
     const handleLogout = async () => {
         try {
-            await axios.post("/api/v1/logout");
-            localStorage.removeItem("authToken"); // Remove the token from localStorage
-            delete axios.defaults.headers.common["Authorization"]; // Remove the token from Axios headers
+            await axios.post("/logout");
+            localStorage.removeItem("authToken");
+            delete axios.defaults.headers.common["Authorization"];
             toast.success("Logged out successfully!");
-            router.push("/login"); // Redirect to login page
+            router.push("/login");
         } catch (error) {
             toast.error("An error occurred during logout. Please try again.");
         }
     };
 </script>
-
-<style scoped>
-    .dashboard {
-        display: flex;
-        min-height: 100vh;
-    }
-
-    .navbar {
-        width: 250px;
-        background-color: #2c3e50;
-        color: white;
-        padding: 1rem;
-    }
-
-    .navbar-brand {
-        font-size: 1.5rem;
-        font-weight: bold;
-        margin-bottom: 1rem;
-    }
-
-    .navbar-nav {
-        list-style: none;
-        padding: 0;
-    }
-
-    .nav-item {
-        margin-bottom: 1rem;
-    }
-
-    .nav-link {
-        color: white;
-        text-decoration: none;
-        display: block;
-        padding: 0.5rem;
-        border-radius: 4px;
-        transition: background-color 0.3s;
-    }
-
-    .nav-link:hover {
-        background-color: #34495e;
-    }
-
-    .logout-button {
-        background: none;
-        border: none;
-        cursor: pointer;
-        width: 100%;
-        text-align: left;
-        padding: 0.5rem;
-    }
-
-    .dashboard-content {
-        flex-grow: 1;
-        padding: 2rem;
-        background-color: #f5f5f5;
-    }
-</style>

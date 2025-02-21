@@ -6,8 +6,16 @@ import DashboardHome from "../views/dashboard/Home.vue";
 import NotFound from '../views/errors/404.vue'
 
 const routes = [
-    { path: '/login', component: Login },
-    { path: '/register', component: Register },
+    {
+        path: '/login',
+        component: Login,
+        meta: { guest: true }
+    },
+    {
+        path: '/register',
+        component: Register,
+        meta: { guest: true }
+    },
     { path: '/:pathMatch(.*)*', component: NotFound },
     {
         path: '/dashboard',
@@ -32,7 +40,7 @@ router.beforeEach(async (to, from, next) => {
             axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
             try {
-                await axios.get('/api/v1/user');
+                await axios.get('/user');
                 next();
             } catch (error) {
                 localStorage.removeItem('authToken');
@@ -42,7 +50,26 @@ router.beforeEach(async (to, from, next) => {
         } else {
             next('/login');
         }
-    } else {
+    } else if (to.meta.guest) {
+        const token = localStorage.getItem('authToken');
+
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+            try {
+                await axios.get('/user');
+                next('/dashboard');
+            } catch (error) {
+                localStorage.removeItem('authToken');
+                delete axios.defaults.headers.common['Authorization'];
+                next();
+            }
+        } else {
+            next();
+        }
+    }
+
+    else {
         next();
     }
 });

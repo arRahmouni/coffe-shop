@@ -1,5 +1,5 @@
 <template>
-    <div v-if="errors && errors[field] && errors[field].length" class="invalid-feedback">
+    <div v-if="errors && errors[field] && errors[field].length" class="text-red-600 text-sm mt-1 flex font-medium">
         {{ errors[field][0] }}
     </div>
 </template>
@@ -16,11 +16,3 @@
         },
     });
 </script>
-
-<style scoped>
-    .invalid-feedback {
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-</style>

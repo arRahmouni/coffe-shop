@@ -2,7 +2,7 @@
     <div class="auth-page">
         <div class="auth-box">
             <h2 class="custom-auth-title">Create an Account</h2>
-            <form @submit.prevent="handleRegister" class="custom-auth-form">
+            <form @submit.prevent="handleAuth" class="custom-auth-form">
                 <!-- First Name -->
                 <div class="form-group">
                     <input
@@ -76,7 +76,7 @@
                 </div>
 
                 <!-- Register Button -->
-                <button type="submit" class="custom-auth-button">Register</button>
+                <button type="submit" class="custom-auth-button" :disabled="isLoading">{{ isLoading ? 'Please wait...' : 'Register' }}</button>
             </form>
             <p class="auth-link">
                 Already have an account?
@@ -87,16 +87,11 @@
 </template>
 
 <script setup>
-    import { reactive } from "vue";
-    import axios from "axios";
-    import { useRouter } from "vue-router";
-    import { useToast } from "vue-toastification";
-    import "../../../css/auth.css";
+    import { reactive, watch } from "vue";
     import { useFormValidation } from "@/composables/useFormValidation"; // Import the composable
     import ErrorMessage from "../components/ErrorMessage.vue"; // Import the ErrorMessage component
-
-    const router = useRouter();
-    const toast = useToast();
+    import { authenticate } from '@/composables/useAuthApi';
+    import "@/../css/auth.css";
 
     // Reactive form state
     const initialFormState  = reactive({
@@ -110,20 +105,11 @@
 
     const { form, errors, clearErrors, handleApiError } = useFormValidation(initialFormState);
 
-    // Register function
-    const handleRegister = async () => {
-        try {
-            clearErrors();
-            // Send registration request
-            await axios.post("/api/v1/register", form);
+    const { handleAuth, isLoading, error } = authenticate('/register', form, clearErrors, 'You have successfully registered.');
 
-            // Show success message
-            toast.success("You have been registered successfully!");
-
-            // Redirect to login page after successful registration
-            router.push("/login");
-        } catch (error) {
-            handleApiError(error);
+    watch(error, (newError) => {
+        if (newError) {
+            handleApiError(newError);
         }
-    };
+    });
 </script>

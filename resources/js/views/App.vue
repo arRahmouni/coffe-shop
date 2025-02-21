@@ -2,7 +2,7 @@
     <router-view></router-view>
 </template>
 
-<script setup>
+<!-- <script setup>
     import { onMounted } from 'vue';
     import { useRouter } from 'vue-router';
     import axios from 'axios';
@@ -26,4 +26,4 @@
             router.push('/login');
         }
     });
-</script>
+</script> -->

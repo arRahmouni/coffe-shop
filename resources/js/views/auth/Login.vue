@@ -2,7 +2,7 @@
     <div class="auth-page">
         <div class="auth-box">
             <h2 class="custom-auth-title">Welcome Back!</h2>
-            <form @submit.prevent="handleLogin" class="custom-auth-form">
+            <form @submit.prevent="handleAuth" class="custom-auth-form">
                 <div class="form-group">
                     <input
                         type="email"
@@ -23,7 +23,7 @@
                     />
                     <ErrorMessage :errors="errors" field="password" />
                 </div>
-                <button type="submit" class="custom-auth-button">Login</button>
+                <button type="submit" class="custom-auth-button" :disabled="isLoading">{{ isLoading ? 'Please wait...' : 'Login' }}</button>
             </form>
             <p class="auth-link">
                 Don't have an account?
@@ -34,16 +34,11 @@
 </template>
 
 <script setup>
-    import { reactive } from "vue";
-    import axios from "axios";
-    import { useRouter } from "vue-router";
-    import { useToast } from "vue-toastification";
-    import "../../../css/auth.css";
-    import { useFormValidation } from "@/composables/useFormValidation"; // Import the composable
-    import ErrorMessage from "../components/ErrorMessage.vue"; // Import the ErrorMessage component
-
-    const router = useRouter();
-    const toast = useToast();
+    import { reactive, watch  } from "vue";
+    import { useFormValidation } from "@/composables/useFormValidation";
+    import { authenticate } from '@/composables/useAuthApi';
+    import ErrorMessage from "../components/ErrorMessage.vue";
+    import "@/../css/auth.css";
 
     // Reactive form state
     const initialFormState  = reactive({
@@ -53,19 +48,11 @@
 
     const { form, errors, clearErrors, handleApiError } = useFormValidation(initialFormState);
 
-    const handleLogin = async () => {
-        try {
-            const response =  await axios.post("/api/v1/login", form);
+    const { handleAuth, isLoading, error } = authenticate('/login', form, clearErrors, 'You have successfully logged in.');
 
-            localStorage.setItem('authToken', response.data.data.token.access_token);
-
-            axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.access_token}`;
-
-            toast.success("Login successful!");
-
-            router.push("/dashboard");
-        } catch (error) {
-            handleApiError(error);
+    watch(error, (newError) => {
+        if (newError) {
+            handleApiError(newError);
         }
-    };
+    });
 </script>
