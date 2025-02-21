@@ -31,9 +31,13 @@ export function useFormValidation(initialFormState) {
 
     // Function to handle API errors
     const handleApiError = (error) => {
-        if (error.response && error.response.status === 422) {
-            handleValidationErrors(error.response.data.errors);
-            toast.error("Please check the data entered and try again.")
+        if (error.response) {
+            if(error.response.status === 422) {
+                handleValidationErrors(error.response.data.errors);
+                toast.error("Please check the data entered and try again.")
+            }
+            else
+                toast.error(error.response.data.message);
         } else {
             toast.error("An error occurred. Please try again.");
         }

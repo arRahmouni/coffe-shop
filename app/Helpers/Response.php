@@ -19,7 +19,7 @@ if(!function_exists('sendApiSuccessResponse'))
 
 if(!function_exists('sendApiFailResponse'))
 {
-    function sendApiFailResponse(string $message = 'Something went wrong', array $errors = [], int $code = HttpStatusCode::UNPROCESSABLE_ENTITY)
+    function sendApiFailResponse(string $message = 'Something went wrong', array $errors = [], int $code = HttpStatusCode::BAD_REQUEST)
     {
         return response()->json([
             'success' => false,

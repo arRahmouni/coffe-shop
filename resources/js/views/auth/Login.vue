@@ -55,9 +55,11 @@
 
     const handleLogin = async () => {
         try {
-            await axios.get("/sanctum/csrf-cookie");
+            const response =  await axios.post("/api/v1/login", form);
 
-            await axios.post("/api/v1/login", form);
+            localStorage.setItem('authToken', response.data.data.token.access_token);
+
+            axios.defaults.headers.common["Authorization"] = `Bearer ${response.data.access_token}`;
 
             toast.success("Login successful!");
 

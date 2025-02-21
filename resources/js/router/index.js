@@ -26,16 +26,24 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
     if (to.meta.requiresAuth) {
-        try {
-            // Check if the user is authenticated by making an API call
-            await axios.get("/api/v1/user");
-            next(); // User is authenticated, allow access
-        } catch (error) {
-            // User is not authenticated, redirect to login
-            next("/login");
+        const token = localStorage.getItem('authToken');
+
+        if (token) {
+            axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+
+            try {
+                await axios.get('/api/v1/user');
+                next();
+            } catch (error) {
+                localStorage.removeItem('authToken');
+                delete axios.defaults.headers.common['Authorization'];
+                next('/login');
+            }
+        } else {
+            next('/login');
         }
     } else {
-        next(); // Route does not require authentication, allow access
+        next();
     }
 });
 

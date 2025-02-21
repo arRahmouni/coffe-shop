@@ -16,10 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         apiPrefix: 'api/v1'
     )
     ->withMiddleware(function (Middleware $middleware) {
-        $middleware->api(prepend: [
-            EnsureFrontendRequestsAreStateful::class,
-            SubstituteBindings::class
-        ]);
+        $middleware->statefulApi();
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (Throwable $exception, $request) {

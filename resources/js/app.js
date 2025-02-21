@@ -28,6 +28,22 @@ const toastOptions = {
     rtl: false,
 };
 
+axios.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response) {
+            if (error.response.status === 401) {
+                localStorage.removeItem('authToken');
+                delete axios.defaults.headers.common['Authorization'];
+                window.location.href = '/login';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 // Use the plugin
 app.use(Toast, toastOptions);
 
