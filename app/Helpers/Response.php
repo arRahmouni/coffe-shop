@@ -33,10 +33,11 @@ if(!function_exists('sendApiFailResponse'))
 
 if(!function_exists('sendSuccessInternalResponse'))
 {
-    function sendSuccessInternalResponse(string $message = null, array $data = [])
+    function sendSuccessInternalResponse(string $message = null, array $data = [], int $code = HttpStatusCode::OK)
     {
         return [
             'success' => true,
+            'code'    => $code,
             'message' => $message,
             'data'    => $data,
             'errors'  => (object) [],
@@ -46,10 +47,11 @@ if(!function_exists('sendSuccessInternalResponse'))
 
 if(!function_exists('sendFailInternalResponse'))
 {
-    function sendFailInternalResponse(string $message = null, array $errors = [])
+    function sendFailInternalResponse(string $message = null, array $errors = [], int $code = HttpStatusCode::BAD_REQUEST)
     {
         return [
             'success' => false,
+            'code'    => $code,
             'message' => $message,
             'data'    => (object) [],
             'errors'  => (object) $errors,

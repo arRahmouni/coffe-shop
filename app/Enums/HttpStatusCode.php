@@ -11,6 +11,7 @@ final class HttpStatusCode
     public const METHOD_NOT_ALLOWED     = 405;
     public const UNPROCESSABLE_ENTITY   = 422;
     public const INTERNAL_SERVER_ERROR  = 500;
+    public const FORBIDDEN              = 403;
 
     public static function all()
     {
@@ -22,6 +23,7 @@ final class HttpStatusCode
             self::METHOD_NOT_ALLOWED,
             self::UNPROCESSABLE_ENTITY,
             self::INTERNAL_SERVER_ERROR,
+            self::FORBIDDEN
         ];
     }
 }

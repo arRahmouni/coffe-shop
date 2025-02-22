@@ -15,8 +15,8 @@ class RegisterRequest extends BaseApiRequest
             'first_name'    => ['required', 'string', 'max:255'],
             'last_name'     => ['required', 'string', 'max:255'],
             'email'         => ['required', 'string', 'email', 'max:255', 'unique:users,email'],
-            'username'      => ['required', 'string', 'min:5', 'max:255', 'regex:/^[a-z0-9_]+$/', 'unique:users,username'],
-            'password'      => ['required', 'confirmed', Password::defaults()],
+            'username'      => ['required', 'string', 'min:5', 'max:255', 'alpha_dash' , 'unique:users,username'],
+            'password'      => ['required', 'confirmed'], //Password::defaults()
         ];
 
         return $rules;

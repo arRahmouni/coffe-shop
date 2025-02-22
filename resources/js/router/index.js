@@ -4,6 +4,9 @@ import Register from '../views/auth/Register.vue'
 import Dashboard from "../views/Dashboard.vue";
 import DashboardHome from "../views/dashboard/Home.vue";
 import NotFound from '../views/errors/404.vue'
+import EmailVerify from '../views/auth/EmailVerify.vue';
+import EmailVerifySuccess from '../views/auth/EmailVerifySuccess.vue';
+import EmailVerifyFailure from '../views/auth/EmailVerifyFailure.vue';
 
 const routes = [
     {
@@ -16,7 +19,10 @@ const routes = [
         component: Register,
         meta: { guest: true }
     },
-    { path: '/:pathMatch(.*)*', component: NotFound },
+    {
+        path: '/:pathMatch(.*)*',
+        component: NotFound
+    },
     {
         path: '/dashboard',
         component: Dashboard,
@@ -25,6 +31,21 @@ const routes = [
             { path: '', component: DashboardHome },
         ]
     },
+    {
+        path: '/email-verification',
+        component: EmailVerify,
+        meta: { guest: true }
+    },
+    {
+        path: '/email-verification-success',
+        component: EmailVerifySuccess,
+        meta: { guest: true }
+    },
+    {
+        path: '/email-verification-failed',
+        component: EmailVerifyFailure,
+        meta: { guest: true }
+    }
 ]
 
 const router = createRouter({

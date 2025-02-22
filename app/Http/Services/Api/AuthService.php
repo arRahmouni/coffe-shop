@@ -4,7 +4,8 @@ namespace app\Http\Services\Api;
 
 use Carbon\Carbon;
 use App\Models\User;
-use Illuminate\Support\Str;
+use App\Events\UserRegister;
+use app\Enums\HttpStatusCode;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
@@ -21,14 +22,16 @@ class AuthService extends BaseApiService
      */
     public function register(array $data): array
     {
+        $data['verification_token'] = $this->createVerificationToken();
+
         DB::transaction(function () use($data) {
             $this->data['user']   = User::create($data);
-            $this->data['token']  = $this->createToken($this->data['user']);
         });
+
+        event(new UserRegister($this->data['user']));
 
         return sendSuccessInternalResponse('user_registered_successfully', [
             'user'  => new UserResource($this->data['user']),
-            'token' => $this->data['token'],
         ]);
     }
 
@@ -48,6 +51,10 @@ class AuthService extends BaseApiService
 
         if (!Hash::check($data['password'], $user->password)) {
             return sendFailInternalResponse('password_not_correct');
+        }
+
+        if(! $user->hasVerifiedEmail()) {
+            return sendFailInternalResponse('email_not_verified', code: HttpStatusCode::FORBIDDEN);
         }
 
         $token = $this->createToken($user);
@@ -108,5 +115,68 @@ class AuthService extends BaseApiService
         $token          = $user->createToken($user->username, ['*'], $exiprationTime);
 
         return new TokenResource($token);
+    }
+
+    /**
+     * Create verification token
+     *
+     * @return string
+     */
+    private function createVerificationToken(): string
+    {
+        return bin2hex(random_bytes(16));
+    }
+
+    /**
+     * Verify email
+     *
+     * @param string $token
+     * @return array
+     */
+    public function verifyEmail(string $token): array
+    {
+        $user = User::where('verification_token', $token)->first();
+
+        if(! $user) {
+            return sendFailInternalResponse('verification_url_invalid');
+        }
+
+        if($user->hasVerifiedEmail()) {
+            return sendFailInternalResponse('email_already_verified');
+        }
+
+        $user->update([
+            'email_verified_at'  => now(),
+            'verification_token' => null,
+        ]);
+
+        return sendSuccessInternalResponse('email_verified_successfully');
+    }
+
+    /**
+     * Resend verification email
+     *
+     * @param string $email
+     * @return array
+     */
+    public function resendVerificationEmail($email)
+    {
+        $user = User::where('email', $email)->first();
+
+        if(! $user) {
+            return sendFailInternalResponse('user_not_found');
+        }
+
+        if($user->hasVerifiedEmail()) {
+            return sendFailInternalResponse('email_already_verified');
+        }
+
+        $user->update([
+            'verification_token' => $this->createVerificationToken(),
+        ]);
+
+        event(new UserRegister($user));
+
+        return sendSuccessInternalResponse('verification_email_sent_successfully');
     }
 }
