@@ -4,6 +4,7 @@ import Register from '../views/auth/Register.vue'
 import Dashboard from "../views/Dashboard.vue";
 import DashboardHome from "../views/dashboard/Home.vue";
 import NotFound from '../views/errors/404.vue'
+import Categories from '../views/dashboard/Categories.vue';
 
 const routes = [
     {
@@ -25,7 +26,16 @@ const routes = [
         component: Dashboard,
         meta: { requiresAuth: true },
         children: [
-            { path: '', component: DashboardHome },
+            {
+                path: '',
+                component: DashboardHome,
+                name: 'Home'
+            },
+            {
+                path: 'categories',
+                component: Categories,
+                name: 'Categories'
+            },
         ]
     },
     {

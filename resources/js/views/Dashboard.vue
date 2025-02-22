@@ -6,9 +6,7 @@
                 <div class="flex justify-between h-16 items-center">
                     <!-- Logo/Title -->
                     <div class="flex items-center">
-                        <span class="text-xl font-bold text-gray-800"
-                            >Dashboard</span
-                        >
+                        <span class="text-xl font-bold text-gray-800">My Store</span>
                     </div>
 
                     <!-- User Dropdown -->
@@ -56,7 +54,12 @@
                 <div class="p-4">
                     <!-- Logo -->
                     <div class="mb-8">
-                        <h2 class="text-xl font-bold text-gray-800">My Store</h2>
+                        <router-link
+                            :to="{ name: 'Home' }"
+                            class="text-xl font-bold text-gray-800"
+                        >
+                            Dashboard
+                        </router-link>
                     </div>
 
                     <!-- Navigation -->
@@ -69,12 +72,13 @@
                             </h3>
                             <ul class="space-y-2">
                                 <li>
-                                    <a
-                                        href="#"
+                                    <router-link
+                                        :to="{ name: 'Categories' }"
                                         class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded"
+                                        active-class="bg-gray-100"
                                     >
                                         Categories
-                                    </a>
+                                    </router-link>
                                 </li>
                                 <li>
                                     <a
@@ -92,14 +96,7 @@
 
             <!-- Main Content -->
             <main class="flex-1 p-8">
-                <div class="bg-white rounded-lg shadow-sm p-6">
-                    <h1 class="text-2xl font-bold mb-4">
-                        Welcome to the Dashboard
-                    </h1>
-                    <p class="text-gray-600">
-                        This is the home page of the dashboard.
-                    </p>
-                </div>
+                <router-view></router-view>
             </main>
         </div>
     </div>

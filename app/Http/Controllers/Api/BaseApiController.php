@@ -2,10 +2,10 @@
 
 namespace app\Http\Controllers\Api;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use Modules\Admin\app\Resources\PaginateResource;
+use App\Http\Controllers\Controller;
+use app\Http\Resources\PaginateResource;
 
 class BaseApiController extends Controller
 {
@@ -40,7 +40,7 @@ class BaseApiController extends Controller
         $this->data['model']    = $this->model->getDataForApi($request->all(), isCollection: true);
         $this->data['page']     = $request->has('page') ? $request->page : 1;
 
-        $perPage = config('admin.pagination');
+        $perPage = config('app.pagination');
 
         $this->data['data']     = $this->data['model']->paginate($perPage, ['*'], 'page', $this->data['page']);
         $this->data['paginate'] = new PaginateResource($this->data['data']);
