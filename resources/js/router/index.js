@@ -4,9 +4,6 @@ import Register from '../views/auth/Register.vue'
 import Dashboard from "../views/Dashboard.vue";
 import DashboardHome from "../views/dashboard/Home.vue";
 import NotFound from '../views/errors/404.vue'
-import EmailVerify from '../views/auth/EmailVerify.vue';
-import EmailVerifySuccess from '../views/auth/EmailVerifySuccess.vue';
-import EmailVerifyFailure from '../views/auth/EmailVerifyFailure.vue';
 
 const routes = [
     {
@@ -33,18 +30,32 @@ const routes = [
     },
     {
         path: '/email-verification',
-        component: EmailVerify,
+        component: () => import('../views/auth/EmailVerify.vue'),
         meta: { guest: true }
     },
     {
         path: '/email-verification-success',
-        component: EmailVerifySuccess,
+        component: () => import('../views/auth/EmailVerifySuccess.vue'),
         meta: { guest: true }
     },
     {
         path: '/email-verification-failed',
-        component: EmailVerifyFailure,
+        component: () => import('../views/auth/EmailVerifyFailure.vue'),
         meta: { guest: true }
+    },
+    {
+        path: '/forgot-password',
+        component: () => import('../views/auth/ForgotPassword.vue'),
+        meta: { guest: true }
+    },
+    {
+        path: '/reset-password',
+        component: () => import('../views/auth/ResetPassword.vue'),
+        meta: { guest: true },
+        props: (route) => ({
+            token: route.query.token,
+            email: route.query.email
+        })
     }
 ]
 

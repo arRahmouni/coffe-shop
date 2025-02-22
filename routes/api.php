@@ -9,7 +9,9 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('login'                 , 'login');
     Route::post('logout'                , 'logout')->middleware('auth:sanctum');
     Route::get('email/verify/{token}'   , 'verifyEmail');
-    Route::post('email/resend'          , 'resendVerificationEmail'); //->middleware(['throttle:3,1']);
+    Route::post('email/resend'          , 'resendVerificationEmail')->middleware(['throttle:3,1']);
+    Route::post('forgot-password'       , 'sendResetPasswordLink');//->middleware(['throttle:3,1']);
+    Route::post('reset-password'        , 'resetPassword');
 });
 
 Route::get('user', [UserController::class, 'show'])->middleware('auth:sanctum');

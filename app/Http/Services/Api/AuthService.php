@@ -6,9 +6,11 @@ use Carbon\Carbon;
 use App\Models\User;
 use App\Events\UserRegister;
 use app\Enums\HttpStatusCode;
+use App\Mail\PasswordResetLink;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\UserResource;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use App\Http\Resources\TokenResource;
 use app\Http\Services\Api\BaseApiService;
 
@@ -65,29 +67,49 @@ class AuthService extends BaseApiService
         ]);
     }
 
-    /**
-     * Forget password
-     *
-     * @param array $data
-     * @return array
-     */
-    public function forgetPassword(array $data): array
+    public function sendResetPasswordLink(array $data): array
     {
-        $user = User::where('phone_number', $data['phone_number'])->first();
+        $user = User::where('email', $data['email'])->first();
 
         if(! $user) {
             return sendFailInternalResponse('user_not_found');
         }
 
-        if(Hash::check($data['new_password'], $user->password)) {
-            return sendFailInternalResponse('new_password_cannot_be_same_as_old_password');
+        $token = $this->createVerificationToken();
+
+        DB::table('password_reset_tokens')->updateOrInsert(
+            [
+                'email' => $user->email,
+            ],
+            [
+                'token'         => Hash::make($token),
+                'created_at'    => now(),
+            ]
+        );
+
+        Mail::to($user->email)->send(new PasswordResetLink($token, $user->email));
+
+        return sendSuccessInternalResponse('password_reset_link_sent_successfully');
+    }
+
+    public function resetPassword(array $data): array
+    {
+        $record = DB::table('password_reset_tokens')->where('email', $data['email'])->first();
+
+        if(! $record || ! Hash::check($data['token'], $record->token)) {
+            return sendFailInternalResponse('password_reset_link_invalid');
         }
 
-        $user->update([
-            'password' => $data['new_password'],
-        ]);
+        if(Carbon::parse($record->created_at)->addMinutes(30)->isPast()) {
+            DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+            return sendFailInternalResponse('password_reset_link_expired', code: HttpStatusCode::EXPIRED);
+        }
 
-        return sendSuccessInternalResponse('password_changed_successfully');
+        User::where('email', $data['email'])->update(['password' => bcrypt($data['password'])]);
+
+        DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
+
+        return sendSuccessInternalResponse('password_reset_successfully');
     }
 
     /**

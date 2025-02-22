@@ -8,7 +8,8 @@ use app\Http\Services\Api\AuthService;
 use app\Http\Requests\Api\LoginRequest;
 use app\Http\Requests\Api\RegisterRequest;
 use app\Http\Controllers\Api\BaseApiController;
-use Modules\Auth\app\Http\Requests\ForgetPasswordRequest;
+use app\Http\Requests\Api\ResetPasswordRequest;
+use app\Http\Requests\Api\SendPasswordResetRequest;
 
 class AuthController extends BaseApiController
 {
@@ -36,12 +37,23 @@ class AuthController extends BaseApiController
         return sendApiSuccessResponse($response['message'], $response['data']);
     }
 
-    public function forgetPassword(ForgetPasswordRequest $request)
+    public function sendResetPasswordLink(SendPasswordResetRequest $request)
     {
-        $response = $this->authService->forgetPassword($request->validated());
+        $response = $this->authService->sendResetPasswordLink($request->validated());
 
         if(! $response['success']) {
-            return sendApiFailResponse($response['message'], errors: $response['errors']);
+            return sendApiFailResponse($response['message']);
+        }
+
+        return sendApiSuccessResponse($response['message'], $response['data']);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $response = $this->authService->resetPassword($request->validated());
+
+        if(! $response['success']) {
+            return sendApiFailResponse($response['message'], code: $response['code'] ?? HttpStatusCode::BAD_REQUEST);
         }
 
         return sendApiSuccessResponse($response['message'], $response['data']);

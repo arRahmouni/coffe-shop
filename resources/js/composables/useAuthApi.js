@@ -92,9 +92,71 @@ export const useAuthApi = () => {
         }
     };
 
+    const handleForgotPassword = async (email) => {
+        try {
+            console.log("Email being sent:", email); // Debugging
+            isLoading.value = true;
+            error.value = null;
+            message.value = "";
+
+            const response = await axios.post("/forgot-password", {
+                email: email,
+            });
+
+            message.value        = "Password reset link sent to your email!";
+            messageClass.value   = "bg-green-100 text-green-800";
+            toast.success("Password reset link sent to your email!");
+
+            router.push("/login");
+        } catch (err) {
+            error.value = err;
+            message.value =
+                err.response?.data?.message ||
+                "An error occurred while sending the reset link";
+            messageClass.value = "bg-red-100 text-red-800";
+            throw err;
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
+    const handleResetPassword = async (email, token, password, password_confirmation) => {
+        try {
+            isLoading.value = true;
+            error.value = null;
+            message.value = "";
+
+            const response = await axios.post("/reset-password", {
+                email,
+                token,
+                password,
+                password_confirmation
+            });
+
+            // Handle success
+            message.value = "Password reset successfully!";
+            messageClass.value = "bg-green-100 text-green-800";
+            toast.success("Password reset successfully!");
+
+            router.push("/login");
+        } catch (err) {
+            // Handle errors
+            error.value = err;
+            message.value =
+                err.response?.data?.message ||
+                "An error occurred while resetting your password";
+            messageClass.value = "bg-red-100 text-red-800";
+            throw err;
+        } finally {
+            isLoading.value = false;
+        }
+    };
+
     return {
         authenticate,
         resendVerificationEmail,
+        handleForgotPassword,
+        handleResetPassword,
         isLoading,
         error,
         message,
