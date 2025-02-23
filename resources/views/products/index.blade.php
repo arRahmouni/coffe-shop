@@ -2,10 +2,21 @@
 
 @section('content')
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Back Button -->
+        <div class="mb-6">
+            <a href="{{ route('coffee.index', ['username' => request('username')]) }}" 
+                class="text-coffee-600 hover:text-coffee-800 flex items-center">
+                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back to Categories
+            </a>
+        </div>
+
         <!-- Products Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($products as $product)
-                <a href="{{ route('products.show', ['username' => request('username'), 'category' => $category->name, 'product' => $product->slug]) }}" 
+                <a href="{{ route('products.show', ['username' => request('username'), 'category' => $category->slug, 'product' => $product->slug]) }}" 
                     class="group block transform transition-transform hover:scale-102 cursor-pointer">
                     <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow     q duration-300">
                         <!-- Product Image -->

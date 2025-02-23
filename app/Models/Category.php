@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Category extends Model
 {
-    /** @use HasFactory<\Database\Factories\CategoryFactory> */
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
@@ -29,6 +28,8 @@ class Category extends Model
         'created_at_format',
         'image_path',
     ];
+
+    
 
     public function user()
     {

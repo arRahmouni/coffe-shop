@@ -17,7 +17,7 @@
         <div class="bg-white rounded-lg shadow-xl overflow-hidden">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <!-- Product Image -->
-                <div class="h-96 bg-gray-100 relative">
+                <div class="bg-gray-100 relative">
                     @if($product->image)
                         <img src="{{ $product->image_path }}" 
                              alt="{{ $product->name }}" 

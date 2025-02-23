@@ -3,7 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -13,11 +14,24 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // $this->createFakeUsers(4);
+        $this->createFakeCategories(100);
+        $this->createFakeProducts(500);
+    }
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+    private function createFakeUsers(int $count): void
+    {
+        User::factory($count)->create();
+        User::factory($count)->verified()->create();
+    }
+
+    private function createFakeCategories(int $count): void
+    {
+        Category::factory($count)->create();
+    }
+
+    private function createFakeProducts(int $count): void
+    {
+        Product::factory($count)->create();
     }
 }
