@@ -78,11 +78,9 @@ export const useAuthApi = () => {
                 email: email,
             });
 
-            // Show success message
             message.value = "Verification link has been resent successfully";
             messageClass.value = "bg-green-100 text-green-800";
         } catch (err) {
-            // Handle errors
             message.value =
                 err.response?.data?.message ||
                 "An error occurred while resending the link";
@@ -94,7 +92,6 @@ export const useAuthApi = () => {
 
     const handleForgotPassword = async (email) => {
         try {
-            console.log("Email being sent:", email); // Debugging
             isLoading.value = true;
             error.value = null;
             message.value = "";
@@ -133,14 +130,12 @@ export const useAuthApi = () => {
                 password_confirmation
             });
 
-            // Handle success
             message.value = "Password reset successfully!";
             messageClass.value = "bg-green-100 text-green-800";
             toast.success("Password reset successfully!");
 
             router.push("/admin/login");
         } catch (err) {
-            // Handle errors
             error.value = err;
             message.value =
                 err.response?.data?.message ||

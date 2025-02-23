@@ -31,7 +31,6 @@ class CategoryService extends BaseApiService
         $model = DB::transaction(function () use($data, $modelData) {
             $model = CrudModel::create($modelData);
 
-            // Upload image for the model
             $model = $this->uploadImageForModel($model, $data, 'images/categories');
 
             return $model;
@@ -49,10 +48,8 @@ class CategoryService extends BaseApiService
         $modelData['user_id']   = request()->user()->id;
 
         $model = DB::transaction(function () use($model, $data, $modelData) {
-            // Update the model
             $model->update($modelData);
 
-            // Upload image for the model
             $model = $this->uploadImageForModel($model, $data, 'images/categories');
 
             return $model;

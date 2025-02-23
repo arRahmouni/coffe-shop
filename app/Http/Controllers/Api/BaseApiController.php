@@ -74,7 +74,7 @@ class BaseApiController extends Controller
             return sendApiFailResponse($result['message'], $result['errors']);
         }
 
-        return sendApiSuccessResponse('created_successfully', data: [
+        return sendApiSuccessResponse('Created successfully', data: [
             'data' => new $this->modelResource($result),
         ]);
     }
@@ -90,7 +90,7 @@ class BaseApiController extends Controller
 
         $this->modelService->updateModel($this->data['model'], app($this->modelRequest)->validated());
 
-        return sendApiSuccessResponse('updated_successfully', [
+        return sendApiSuccessResponse('Updated successfully', [
             'data' => new $this->modelResource($this->data['model']),
         ]);
     }
@@ -104,6 +104,6 @@ class BaseApiController extends Controller
 
         $this->data['model']->delete();
 
-        return sendApiSuccessResponse('deleted_successfully');
+        return sendApiSuccessResponse('Deleted successfully');
     }
 }

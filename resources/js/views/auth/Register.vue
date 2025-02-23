@@ -117,11 +117,10 @@
 
 <script setup>
     import { reactive, watch, ref } from "vue";
-    import { useFormValidation } from "@/composables/useFormValidation"; // Import the composable
-    import ErrorMessage from "@/views/components/ErrorMessage.vue"; // Import the ErrorMessage component
-    import { useAuthApi } from '@/composables/useAuthApi'; // Import the updated composable
+    import { useFormValidation } from "@/composables/useFormValidation";
+    import ErrorMessage from "@/views/components/ErrorMessage.vue";
+    import { useAuthApi } from '@/composables/useAuthApi';
 
-    // Reactive form state
     const initialFormState  = reactive({
         first_name: "",
         last_name: "",

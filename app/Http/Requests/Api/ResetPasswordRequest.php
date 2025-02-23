@@ -3,6 +3,7 @@
 namespace app\Http\Requests\Api;
 
 use app\Http\Requests\Api\BaseApiRequest;
+use Illuminate\Validation\Rules\Password;
 
 class ResetPasswordRequest extends BaseApiRequest
 {
@@ -14,7 +15,7 @@ class ResetPasswordRequest extends BaseApiRequest
         return [
             'email'     =>  ['required', 'email', 'exists:users,email'],
             'token'     =>  ['required'],
-            'password'  =>  ['required', 'confirmed'], //Password::defaults()
+            'password'  =>  ['required', 'confirmed', Password::defaults()],
         ];
     }
 

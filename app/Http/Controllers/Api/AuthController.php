@@ -10,6 +10,7 @@ use app\Http\Requests\Api\RegisterRequest;
 use app\Http\Controllers\Api\BaseApiController;
 use app\Http\Requests\Api\ResetPasswordRequest;
 use app\Http\Requests\Api\SendPasswordResetRequest;
+use App\Http\Resources\UserResource;
 
 class AuthController extends BaseApiController
 {
@@ -92,6 +93,8 @@ class AuthController extends BaseApiController
 
     public function showUserInfo(Request $request)
     {
-        return $request->user();
+        return sendApiSuccessResponse('User info', [
+            'user' => new UserResource($request->user())
+        ]);
     }
 }

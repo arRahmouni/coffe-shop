@@ -14,7 +14,9 @@
                         <button
                             @click="toggleDropdown"
                             class="flex items-center space-x-2 focus:outline-none">
-                            <span class="text-gray-600">root@root.com</span>
+                            <span class="text-gray-600">
+                                {{ userEmail }}
+                            </span>
                             <svg
                                 class="w-4 h-4"
                                 fill="none"
@@ -104,7 +106,7 @@
 </template>
 
 <script setup>
-    import { ref } from "vue";
+    import { ref, onMounted  } from "vue";
     import { useRouter } from "vue-router";
     import { useToast } from "vue-toastification";
     import axios from "axios";
@@ -117,8 +119,17 @@
 
     const router = useRouter();
     const toast = useToast();
+    const userEmail = ref('');
 
-    // Logout function
+    onMounted(async () => {
+        try {
+            const response = await axios.get('/user');
+            userEmail.value = response.data.data.user.email;
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+        }
+    });
+
     const handleLogout = async () => {
         try {
             await axios.post("/logout");

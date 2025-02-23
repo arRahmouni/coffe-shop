@@ -15,7 +15,6 @@ class SendEmailVerificationRegistered
      */
     public function __construct()
     {
-        //
     }
 
     /**

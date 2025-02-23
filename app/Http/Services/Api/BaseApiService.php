@@ -15,7 +15,7 @@ class BaseApiService
 
     public function __construct()
     {
-        //
+
     }
 
     /**

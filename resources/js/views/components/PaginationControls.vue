@@ -1,4 +1,3 @@
-<!-- components/PaginationControls.vue -->
 <template>
     <div class="flex justify-between items-center mt-4">
         <button

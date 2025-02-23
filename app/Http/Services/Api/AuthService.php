@@ -32,7 +32,7 @@ class AuthService extends BaseApiService
 
         event(new UserRegister($this->data['user']));
 
-        return sendSuccessInternalResponse('user_registered_successfully', [
+        return sendSuccessInternalResponse('User registered successfully', [
             'user'  => new UserResource($this->data['user']),
         ]);
     }
@@ -48,20 +48,20 @@ class AuthService extends BaseApiService
         $user = User::where('email', $data['email'])->first();
 
         if (! $user) {
-            return sendFailInternalResponse('user_not_found');
+            return sendFailInternalResponse('User not found');
         }
 
         if (!Hash::check($data['password'], $user->password)) {
-            return sendFailInternalResponse('password_not_correct');
+            return sendFailInternalResponse('Invalid credentials');
         }
 
         if(! $user->hasVerifiedEmail()) {
-            return sendFailInternalResponse('email_not_verified', code: HttpStatusCode::FORBIDDEN);
+            return sendFailInternalResponse('Email not verified', code: HttpStatusCode::FORBIDDEN);
         }
 
         $token = $this->createToken($user);
 
-        return sendSuccessInternalResponse('login_successfully', [
+        return sendSuccessInternalResponse('User logged in successfully', [
             'user'  => new UserResource($user),
             'token' => $token,
         ]);
@@ -72,7 +72,7 @@ class AuthService extends BaseApiService
         $user = User::where('email', $data['email'])->first();
 
         if(! $user) {
-            return sendFailInternalResponse('user_not_found');
+            return sendFailInternalResponse('User not found');
         }
 
         $token = $this->createVerificationToken();
@@ -89,7 +89,7 @@ class AuthService extends BaseApiService
 
         Mail::to($user->email)->send(new PasswordResetLink($token, $user->email));
 
-        return sendSuccessInternalResponse('password_reset_link_sent_successfully');
+        return sendSuccessInternalResponse('Password reset link sent successfully');
     }
 
     public function resetPassword(array $data): array
@@ -97,7 +97,7 @@ class AuthService extends BaseApiService
         $record = DB::table('password_reset_tokens')->where('email', $data['email'])->first();
 
         if(! $record || ! Hash::check($data['token'], $record->token)) {
-            return sendFailInternalResponse('password_reset_link_invalid');
+            return sendFailInternalResponse('Password reset link invalid');
         }
 
         if(Carbon::parse($record->created_at)->addMinutes(30)->isPast()) {
@@ -109,7 +109,7 @@ class AuthService extends BaseApiService
 
         DB::table('password_reset_tokens')->where('email', $data['email'])->delete();
 
-        return sendSuccessInternalResponse('password_reset_successfully');
+        return sendSuccessInternalResponse('Password reset successfully');
     }
 
     /**
@@ -122,7 +122,7 @@ class AuthService extends BaseApiService
     {
         $user->tokens()->delete();
 
-        return sendSuccessInternalResponse('logout_successfully');
+        return sendSuccessInternalResponse('Logged out successfully');
     }
 
     /**
@@ -160,11 +160,11 @@ class AuthService extends BaseApiService
         $user = User::where('verification_token', $token)->first();
 
         if(! $user) {
-            return sendFailInternalResponse('verification_url_invalid');
+            return sendFailInternalResponse('Verification url not valid');
         }
 
         if($user->hasVerifiedEmail()) {
-            return sendFailInternalResponse('email_already_verified');
+            return sendFailInternalResponse('Email already verified');
         }
 
         $user->update([
@@ -172,7 +172,7 @@ class AuthService extends BaseApiService
             'verification_token' => null,
         ]);
 
-        return sendSuccessInternalResponse('email_verified_successfully');
+        return sendSuccessInternalResponse('Email verified successfully');
     }
 
     /**
@@ -186,11 +186,11 @@ class AuthService extends BaseApiService
         $user = User::where('email', $email)->first();
 
         if(! $user) {
-            return sendFailInternalResponse('user_not_found');
+            return sendFailInternalResponse('User not found');
         }
 
         if($user->hasVerifiedEmail()) {
-            return sendFailInternalResponse('email_already_verified');
+            return sendFailInternalResponse('Email already verified');
         }
 
         $user->update([
@@ -199,6 +199,6 @@ class AuthService extends BaseApiService
 
         event(new UserRegister($user));
 
-        return sendSuccessInternalResponse('verification_email_sent_successfully');
+        return sendSuccessInternalResponse('Verification email sent successfully');
     }
 }

@@ -84,7 +84,6 @@
     const { handleResetPassword, isLoading, error } = useAuthApi();
     const { form, errors, clearErrors, handleApiError } = useFormValidation(initialFormState);
 
-    // Get values from route query or form
     const email = route.query.email;
     const token = route.query.token;
     const showPassword = ref(false);

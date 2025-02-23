@@ -64,14 +64,11 @@
 
     const route = useRoute();
 
-    // Define email as a ref
     const email = ref("");
 
-    // Use the resendVerificationEmail function from useAuthApi
     const { resendVerificationEmail, isLoading, message, messageClass } = useAuthApi();
 
     onMounted(() => {
-        // Set the email value from the query or localStorage
         email.value = localStorage.getItem("registered_email");
     });
 </script>

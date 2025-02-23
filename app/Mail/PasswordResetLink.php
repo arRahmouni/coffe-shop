@@ -18,7 +18,6 @@ class PasswordResetLink extends Mailable
      */
     public function __construct(private string $token, private string $email)
     {
-        //
     }
 
     /**

@@ -32,7 +32,6 @@ class ProductService extends BaseApiService
 
             $model->categories()->sync($data['category_ids']);
 
-            // Upload image for the model
             $model = $this->uploadImageForModel($model, $data, 'images/products');
 
             return $model;
@@ -49,12 +48,10 @@ class ProductService extends BaseApiService
         $modelData = $this->prepareModelData($data);
 
         $model = DB::transaction(function () use($model, $data, $modelData) {
-            // Update the model
             $model->update($modelData);
 
             $model->categories()->sync($data['category_ids']);
 
-            // Upload image for the model
             $model = $this->uploadImageForModel($model, $data, 'images/products');
 
             return $model;
