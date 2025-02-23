@@ -17,7 +17,6 @@ export default function usePaginationFetcher(apiPath) {
             const response = await axios.get(`/${apiPath}`, {
                 params: { page },
             });
-            console.log(response);
             items.value = response.data.data.data;
             currentPage.value = response.data.data.paginate.current_page;
             totalPages.value = response.data.data.paginate.last_page;

@@ -4,17 +4,17 @@ namespace app\Http\Services\Api;
 
 use Illuminate\Support\Facades\DB;
 use app\Http\Services\Api\BaseApiService;
-use app\Models\Category as CrudModel;
+use app\Models\Product as CrudModel;
 
-class CategoryService extends BaseApiService
+class ProductService extends BaseApiService
 {
-
     /**
      * The unnecessary fields for crud.
      * Example: if the data has translation fields, you can add them here. As a ('title', 'description')
      */
     protected $unnecessaryFieldsForCrud = [
         'image',
+        'category_ids',
     ];
 
     /**
@@ -25,14 +25,15 @@ class CategoryService extends BaseApiService
      */
     public function createModel(array $data): CrudModel
     {
-        $modelData              = $this->prepareModelData($data);
-        $modelData['user_id']   = request()->user()->id;
+        $modelData = $this->prepareModelData($data);
 
         $model = DB::transaction(function () use($data, $modelData) {
             $model = CrudModel::create($modelData);
 
+            $model->categories()->sync($data['category_ids']);
+
             // Upload image for the model
-            $model = $this->uploadImageForModel($model, $data, 'images/categories');
+            $model = $this->uploadImageForModel($model, $data, 'images/products');
 
             return $model;
         });
@@ -45,19 +46,21 @@ class CategoryService extends BaseApiService
      */
     public function updateModel(CrudModel $model, array $data): CrudModel
     {
-        $modelData              = $this->prepareModelData($data);
-        $modelData['user_id']   = request()->user()->id;
+        $modelData = $this->prepareModelData($data);
 
         $model = DB::transaction(function () use($model, $data, $modelData) {
             // Update the model
             $model->update($modelData);
 
+            $model->categories()->sync($data['category_ids']);
+
             // Upload image for the model
-            $model = $this->uploadImageForModel($model, $data, 'images/categories');
+            $model = $this->uploadImageForModel($model, $data, 'images/products');
 
             return $model;
         });
 
         return $model;
     }
+
 }

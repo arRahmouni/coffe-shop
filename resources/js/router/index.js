@@ -5,6 +5,7 @@ import Dashboard from "../views/Dashboard.vue";
 import DashboardHome from "../views/dashboard/Home.vue";
 import NotFound from '../views/errors/404.vue'
 import Categories from '../views/dashboard/Categories.vue';
+import Products from '../views/dashboard/Products.vue';
 
 const routes = [
     {
@@ -36,6 +37,11 @@ const routes = [
                 component: Categories,
                 name: 'Categories'
             },
+            {
+                path: 'products',
+                component: Products,
+                name: 'Products'
+            }
         ]
     },
     {

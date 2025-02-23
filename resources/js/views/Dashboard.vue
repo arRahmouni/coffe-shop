@@ -81,12 +81,13 @@
                                     </router-link>
                                 </li>
                                 <li>
-                                    <a
-                                        href="#"
+                                    <router-link
+                                        :to="{ name: 'Products' }"
                                         class="block px-3 py-2 text-gray-700 hover:bg-gray-100 rounded"
+                                        active-class="bg-gray-100"
                                     >
                                         Products
-                                    </a>
+                                    </router-link>
                                 </li>
                             </ul>
                         </div>

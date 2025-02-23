@@ -1,9 +1,9 @@
-<!-- views/dashboard/Categories.vue -->
+<!-- views/dashboard/Products.vue -->
 <template>
     <div class="bg-white rounded-lg shadow-sm p-6">
         <!-- Header -->
         <div class="flex justify-between items-center mb-6">
-            <h1 class="text-2xl font-bold">Categories</h1>
+            <h1 class="text-2xl font-bold">Products</h1>
             <button
                 @click="openCreateModal"
                 class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
@@ -27,6 +27,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Image</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
                     </tr>
@@ -34,29 +35,30 @@
 
                 <!-- Table Body -->
                 <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="item in items" :key="item.id">
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.id }}</td>
+                    <tr v-for="product in products" :key="product.id">
+                        <td class="px-6 py-4 whitespace-nowrap">{{ product.id }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <img
-                                v-if="item.image"
-                                :src="item.image"
-                                :alt="item.name"
+                                v-if="product.image"
+                                :src="product.image"
+                                :alt="product.name"
                                 class="w-16 h-16 object-cover rounded"
                             >
                             <div v-else class="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
-                                <span class="text-gray-400 text-xs">Coffe Shop</span>
+                                <span class="text-gray-400 text-xs">No Image</span>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">{{ item.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ product.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">{{ product.price_with_currency }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span :class="statusClasses(item.is_active)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
-                                {{ item.is_active ? "Active" : "Inactive" }}
+                            <span :class="statusClasses(product.is_active)" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full">
+                                {{ product.is_active ? "Active" : "Inactive" }}
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap space-x-2">
                             <!-- Edit Button -->
                             <button
-                                @click="openEditModal(item)"
+                                @click="openEditModal(product)"
                                 class="text-blue-500 hover:text-blue-700"
                                 title="Edit"
                             >
@@ -67,7 +69,7 @@
 
                             <!-- Delete Button -->
                             <button
-                                @click="confirmDelete(item.id)"
+                                @click="confirmDelete(product.id)"
                                 class="text-red-500 hover:text-red-700"
                                 title="Delete"
                             >
@@ -80,7 +82,7 @@
                 </tbody>
             </table>
 
-            <!-- Reusable Pagination -->
+            <!-- Pagination -->
             <PaginationControls
                 :current-page="currentPage"
                 :total-pages="totalPages"
@@ -89,19 +91,18 @@
             />
         </div>
 
-        <!-- Create Category Modal -->
+        <!-- Create Product Modal -->
         <div
             v-if="isCreateModalOpen"
             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         >
-            <div class="bg-white rounded-lg p-6 w-1/3">
-                <h2 class="text-xl font-bold mb-4">Create Category</h2>
-                <form @submit.prevent="createCategory">
-                    <!-- Name Field -->
+            <div class="bg-white rounded-lg p-6 w-1/3 max-h-[80vh] overflow-y-auto">
+                <h2 class="text-xl font-bold mb-4">Create Product</h2>
+                <form @submit.prevent="createProduct">
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Name</label>
                         <input
-                            v-model="newCategory.name"
+                            v-model="newProduct.name"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
                             required
@@ -113,36 +114,68 @@
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Slug</label>
                         <input
-                            v-model="newCategory.slug"
+                            v-model="newProduct.slug"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
                             required
                         />
                     </div>
 
+                    <!-- Description Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Description</label>
+                        <textarea
+                            v-model="newProduct.description"
+                            class="w-full px-3 py-2 border rounded-lg"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <!-- Price Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Price</label>
+                        <input
+                            v-model="newProduct.price"
+                            type="number"
+                            class="w-full px-3 py-2 border rounded-lg"
+                            required
+                            step="0.01"
+                        />
+                    </div>
+
+                    <!-- Categories (Multi-Select) -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Categories</label>
+                        <select v-model="selectedCategories" class="w-full px-3 py-2 border rounded-lg" multiple>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
+                        </select>
+                    </div>
+
+
                     <!-- Active Status -->
                     <div class="mb-4">
                         <label class="flex items-center space-x-2">
                             <input
                                 type="checkbox"
-                                v-model="newCategory.is_active"
+                                v-model="newProduct.is_active"
                                 class="rounded text-blue-500"
                             />
                             <span class="text-gray-700">Active</span>
                         </label>
                     </div>
 
-                    <!-- Image Upload Section -->
+                    <!-- Image Upload -->
                     <ImageUpload
-                        v-model="newCategory.image"
-                        :field-name="'category_image'"
-                        :label="'Category Image'"
+                        v-model="newProduct.image"
+                        :field-name="'product_image'"
+                        :label="'Product Image'"
                         :accepted-extensions="'image/jpeg, image/png'"
                         :max-size="10"
                         @file-selected="handleFileSelected"
                         @file-removed="handleFileRemoved"
-                    >
-                    </ImageUpload>
+                    />
 
                     <!-- Form Actions -->
                     <div class="flex justify-end">
@@ -164,19 +197,19 @@
             </div>
         </div>
 
-        <!-- Edit Category Modal -->
+        <!-- Edit Product Modal -->
         <div
             v-if="isEditModalOpen"
             class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center"
         >
-            <div class="bg-white rounded-lg p-6 w-1/3">
-                <h2 class="text-xl font-bold mb-4">Edit Category</h2>
-                <form @submit.prevent="updateCategory">
+        <div class="bg-white rounded-lg p-6 w-1/3 max-h-[80vh] overflow-y-auto">
+            <h2 class="text-xl font-bold mb-4">Edit Product</h2>
+                <form @submit.prevent="updateProduct">
                     <!-- Name Field -->
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Name</label>
                         <input
-                            v-model="newCategory.name"
+                            v-model="newProduct.name"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
                             required
@@ -188,30 +221,63 @@
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Slug</label>
                         <input
-                            v-model="newCategory.slug"
+                            v-model="newProduct.slug"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
                             required
                         />
                     </div>
 
+                    <!-- Description Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Description</label>
+                        <textarea
+                            v-model="newProduct.description"
+                            class="w-full px-3 py-2 border rounded-lg"
+                            rows="3"
+                        ></textarea>
+                    </div>
+
+                    <!-- Price Field -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Price</label>
+                        <input
+                            v-model="newProduct.price"
+                            type="number"
+                            class="w-full px-3 py-2 border rounded-lg"
+                            required
+                            step="0.01"
+                        />
+                    </div>
+
+                    <!-- Category Selection -->
+                    <div class="mb-4">
+                        <label class="block text-gray-700 mb-2">Categories</label>
+                        <select v-model="selectedCategories" class="w-full px-3 py-2 border rounded-lg" multiple>
+                            <option v-for="category in categories" :key="category.id" :value="category.id">
+                                {{ category.name }}
+                            </option>
+                        </select>
+                    </div>
+
+
                     <!-- Active Status -->
                     <div class="mb-4">
                         <label class="flex items-center space-x-2">
                             <input
                                 type="checkbox"
-                                v-model="newCategory.is_active"
+                                v-model="newProduct.is_active"
                                 class="rounded text-blue-500"
                             />
                             <span class="text-gray-700">Active</span>
                         </label>
                     </div>
 
-                    <!-- Image Upload with existing image -->
+                    <!-- Image Upload -->
                     <ImageUpload
-                        v-model="newCategory.image"
-                        :field-name="'category_image'"
-                        :label="'Category Image'"
+                        v-model="newProduct.image"
+                        :field-name="'product_image'"
+                        :label="'Product Image'"
                         :accepted-extensions="'image/jpeg, image/png'"
                         :max-size="10"
                         :existing-image="existingImageUrl"
@@ -232,7 +298,7 @@
                             type="submit"
                             class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
                         >
-                            Update
+                            Save
                         </button>
                     </div>
                 </form>
@@ -244,15 +310,32 @@
 <script setup>
     import usePaginationFetcher from "@/composables/usePaginationFetcher";
     import PaginationControls from "@/views/components/PaginationControls.vue";
-    import { ref } from "vue";
+    import { ref, onMounted, onBeforeUnmount, nextTick, watch } from "vue";
     import axios from "axios";
     import { useToast } from "vue-toastification";
     import ImageUpload from "@/views/components/Form/ImageUpload.vue";
-    import Swal from 'sweetalert2';
-    import 'sweetalert2/src/sweetalert2.scss';
+    import Swal from "sweetalert2";
+    import "sweetalert2/src/sweetalert2.scss";
+
+    const categories = ref([]);
+    const selectedCategories = ref([]);
+
+    const loadCategories = async () => {
+        try {
+            const response = await axios.get('/categories');
+            categories.value = response.data.data.data;
+        } catch (error) {
+            console.error('Error loading categories:', error);
+        }
+    };
+
+    const statusClasses = (status) => ({
+        "bg-green-100 text-green-800": status === true,
+        "bg-red-100 text-red-800": status === false,
+    });
 
     const {
-        items,
+        items: products,
         isLoading,
         error,
         currentPage,
@@ -260,29 +343,26 @@
         fetchData,
         nextPage,
         prevPage,
-    } = usePaginationFetcher("categories");
+    } = usePaginationFetcher("products");
 
-    // Fetch data on mount
+    // Fetch products on mount
     fetchData();
-
-    // Status styling (component-specific)
-    const statusClasses = (status) => ({
-        "bg-green-100 text-green-800": status === true,
-        "bg-red-100 text-red-800": status === false,
-    });
 
     const toast = useToast();
     const isCreateModalOpen = ref(false);
-    const newCategory = ref({
+    const newProduct = ref({
         name: "",
         slug: "",
+        price: 0,
         is_active: true,
         image: null,
+        description: "",
+        category_ids: [],
     });
 
     // Auto-generate slug from name
     const generateSlug = () => {
-        newCategory.value.slug = newCategory.value.name
+        newProduct.value.slug = newProduct.value.name
             .toLowerCase()
             .replace(/ /g, "-")
             .replace(/[^\w-]+/g, "");
@@ -290,116 +370,130 @@
 
     const openCreateModal = () => {
         isCreateModalOpen.value = true;
+        selectedCategories.value = [];
+        loadCategories(); // Fetch categories when opening the modal
     };
 
     const closeCreateModal = () => {
         isCreateModalOpen.value = false;
-        newCategory.value = {
+        newProduct.value = {
             name: "",
             slug: "",
+            price: 0,
             is_active: true,
             image: null,
+            description: "",
+            category_ids: [],
         };
     };
 
-    const createCategory = async () => {
+    const createProduct = async () => {
         try {
             const formData = new FormData();
-            formData.append("name", newCategory.value.name);
-            formData.append("slug", newCategory.value.slug);
-            formData.append("is_active", newCategory.value.is_active ? 1 : 0);
-            if (newCategory.value.image) {
-                formData.append("image", newCategory.value.image);
+            formData.append("name", newProduct.value.name);
+            formData.append("slug", newProduct.value.slug);
+            formData.append("description", newProduct.value.description);
+            formData.append("price", newProduct.value.price);
+            formData.append("is_active", newProduct.value.is_active ? 1 : 0);
+            if (newProduct.value.image) {
+                formData.append("image", newProduct.value.image);
             }
+            selectedCategories.value.forEach(categoryId => {
+                formData.append("category_ids[]", categoryId);
+            });
 
-            await axios.post("/categories", formData, {
+            await axios.post("/products", formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
 
-            toast.success("Category created successfully!");
+            toast.success("Product created successfully!");
             closeCreateModal();
             fetchData();
         } catch (error) {
-            toast.error("Error creating category");
+            toast.error("Error creating product");
             console.error(error);
         }
     };
 
+    // Edit Product
     const isEditModalOpen = ref(false);
-    const editingCategoryId = ref(null);
+    const editingProductId = ref(null);
     const existingImageUrl = ref(null);
 
-    // Edit Category Functions
-    const openEditModal = (category) => {
-        editingCategoryId.value = category.id;
-        existingImageUrl.value = category.image;
-        newCategory.value = {
-            name: category.name,
-            slug: category.slug,
-            is_active: category.is_active,
-            image: null
+    const openEditModal = (product) => {
+        editingProductId.value = product.id;
+        existingImageUrl.value = product.image;
+        newProduct.value = {
+            name: product.name,
+            slug: product.slug,
+            description: product.description,
+            price: product.price,
+            is_active: product.is_active,
+            image: null,
+            category_ids: product.categories.map((cat) => cat.id),
         };
         isEditModalOpen.value = true;
+        selectedCategories.value = product.categories.map(c => c.id)
+        loadCategories()
     };
 
-    const updateCategory = async () => {
+
+    const updateProduct = async () => {
         try {
             const formData = new FormData();
-            formData.append("name", newCategory.value.name);
-            formData.append("slug", newCategory.value.slug);
-            formData.append("is_active", newCategory.value.is_active ? 1 : 0);
+            formData.append("name", newProduct.value.name);
+            formData.append("slug", newProduct.value.slug);
+            formData.append("description", newProduct.value.description);
+            formData.append("price", newProduct.value.price);
+            formData.append("is_active", newProduct.value.is_active ? 1 : 0);
             formData.append("_method", "PUT");
 
-            if (newCategory.value.image) {
-                formData.append("image", newCategory.value.image);
+            if (newProduct.value.image) {
+                formData.append("image", newProduct.value.image);
             }
 
-            await axios.post(`/categories/${editingCategoryId.value}`, formData, {
+            selectedCategories.value.forEach(categoryId => {
+                formData.append("category_ids[]", categoryId);
+            });
+
+            await axios.post(`/products/${editingProductId.value}`, formData, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
             });
 
-            toast.success("Category updated successfully!");
+            toast.success("Product updated successfully!");
             closeEditModal();
             fetchData();
         } catch (error) {
-            toast.error("Error updating category");
+            toast.error("Error updating product");
             console.error(error);
         }
     };
 
-    // Delete Category Function
+    // Delete Product
     const confirmDelete = async (id) => {
         const result = await Swal.fire({
-            title: 'Are you sure?',
+            title: "Are you sure?",
             text: "You won't be able to revert this!",
-            icon: 'warning',
+            icon: "warning",
             showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, delete it!'
+            confirmButtonColor: "#3085d6",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Yes, delete it!",
         });
 
         if (result.isConfirmed) {
             try {
-                await axios.delete(`/categories/${id}`);
+                await axios.delete(`/products/${id}`);
 
-                Swal.fire(
-                    'Deleted!',
-                    'Category has been deleted.',
-                    'success'
-                );
+                Swal.fire("Deleted!", "Product has been deleted.", "success");
 
                 fetchData(); // Refresh the data
             } catch (error) {
-                Swal.fire(
-                    'Error!',
-                    'Failed to delete category.',
-                    'error'
-                );
+                Swal.fire("Error!", "Failed to delete product.", "error");
                 console.error(error);
             }
         }
@@ -407,21 +501,28 @@
 
     const closeEditModal = () => {
         isEditModalOpen.value = false;
-        editingCategoryId.value = null;
+        editingProductId.value = null;
         existingImageUrl.value = null;
-        newCategory.value = {
+        newProduct.value = {
             name: "",
             slug: "",
+            price: 0,
             is_active: true,
-            image: null
+            image: null,
+            category_ids: [],
         };
     };
 
+    // File Handling
     const handleFileSelected = ({ file, fieldName }) => {
-        console.log('File selected for field:', fieldName, file);
+        console.log("File selected for field:", fieldName, file);
     };
 
     const handleFileRemoved = (fieldName) => {
-        console.log('File removed from field:', fieldName);
+        console.log("File removed from field:", fieldName);
     };
+
+    onMounted(() => {
+        loadCategories(); // Load categories when the component mounts
+    });
 </script>
