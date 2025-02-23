@@ -104,8 +104,10 @@
                             v-model="newCategory.name"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
+                            :class="{ 'border-red-500': errors.name }"
                             @input="generateSlug"
                         />
+                        <ErrorMessage :errors="errors" field="name" />
                     </div>
 
                     <!-- Slug Field -->
@@ -115,7 +117,9 @@
                             v-model="newCategory.slug"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
+                            :class="{ 'border-red-500': errors.slug }"
                         />
+                        <ErrorMessage :errors="errors" field="slug" />
                     </div>
 
                     <!-- Active Status -->
@@ -125,8 +129,10 @@
                                 type="checkbox"
                                 v-model="newCategory.is_active"
                                 class="rounded text-blue-500"
+                                :class="{ 'border-red-500': errors.is_active }"
                             />
                             <span class="text-gray-700">Active</span>
+                            <ErrorMessage :errors="errors" field="is_active" />
                         </label>
                     </div>
 
@@ -139,8 +145,8 @@
                         :max-size="10"
                         @file-selected="handleFileSelected"
                         @file-removed="handleFileRemoved"
-                    >
-                    </ImageUpload>
+                    />
+                    <ErrorMessage :errors="errors" field="image" />
 
                     <!-- Form Actions -->
                     <div class="flex justify-end">
@@ -177,9 +183,10 @@
                             v-model="newCategory.name"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.name }"
                             @input="generateSlug"
                         />
+                        <ErrorMessage :errors="errors" field="name" />
                     </div>
 
                     <!-- Slug Field -->
@@ -189,8 +196,9 @@
                             v-model="newCategory.slug"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.slug }"
                         />
+                        <ErrorMessage :errors="errors" field="slug" />
                     </div>
 
                     <!-- Active Status -->
@@ -202,6 +210,7 @@
                                 class="rounded text-blue-500"
                             />
                             <span class="text-gray-700">Active</span>
+                            <ErrorMessage :errors="errors" field="is_active" />
                         </label>
                     </div>
 
@@ -216,6 +225,7 @@
                         @file-selected="handleFileSelected"
                         @file-removed="handleFileRemoved"
                     />
+                    <ErrorMessage :errors="errors" field="image" />
 
                     <!-- Form Actions -->
                     <div class="flex justify-end">
@@ -246,8 +256,8 @@
     import axios from "axios";
     import { useToast } from "vue-toastification";
     import ImageUpload from "@/views/components/Form/ImageUpload.vue";
-    import Swal from 'sweetalert2';
-    import 'sweetalert2/src/sweetalert2.scss';
+    import { useFormValidation } from "@/composables/useFormValidation";
+    import ErrorMessage from "@/views/components/ErrorMessage.vue";
 
     const {
         items,
@@ -259,6 +269,16 @@
         nextPage,
         prevPage,
     } = usePaginationFetcher("categories");
+
+    // Add validation setup
+    const initialFormState = {
+        name: "",
+        slug: "",
+        is_active: true,
+        image: null,
+    };
+
+    const { form, errors, clearErrors, handleApiError } = useFormValidation(initialFormState);
 
     // Fetch data on mount
     fetchData();
@@ -288,6 +308,7 @@
 
     const openCreateModal = () => {
         isCreateModalOpen.value = true;
+        clearErrors();
     };
 
     const closeCreateModal = () => {
@@ -298,10 +319,12 @@
             is_active: true,
             image: null,
         };
+        clearErrors();
     };
 
     const createCategory = async () => {
         try {
+            clearErrors();
             const formData = new FormData();
             formData.append("name", newCategory.value.name);
             formData.append("slug", newCategory.value.slug);
@@ -320,8 +343,7 @@
             closeCreateModal();
             fetchData();
         } catch (error) {
-            toast.error("Error creating category");
-            console.error(error);
+            handleApiError(error); 
         }
     };
 
@@ -344,6 +366,7 @@
 
     const updateCategory = async () => {
         try {
+            clearErrors();
             const formData = new FormData();
             formData.append("name", newCategory.value.name);
             formData.append("slug", newCategory.value.slug);
@@ -364,8 +387,7 @@
             closeEditModal();
             fetchData();
         } catch (error) {
-            toast.error("Error updating category");
-            console.error(error);
+            handleApiError(error);
         }
     };
 
@@ -413,6 +435,7 @@
             is_active: true,
             image: null
         };
+        clearErrors();
     };
 
     const handleFileSelected = ({ file, fieldName }) => {

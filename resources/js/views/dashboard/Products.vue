@@ -105,9 +105,10 @@
                             v-model="newProduct.name"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.name }"
                             @input="generateSlug"
                         />
+                        <ErrorMessage :errors="errors" field="name" />
                     </div>
 
                     <!-- Slug Field -->
@@ -117,8 +118,9 @@
                             v-model="newProduct.slug"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.slug }"
                         />
+                        <ErrorMessage :errors="errors" field="slug" />
                     </div>
 
                     <!-- Description Field -->
@@ -127,8 +129,10 @@
                         <textarea
                             v-model="newProduct.description"
                             class="w-full px-3 py-2 border rounded-lg"
+                            :class="{ 'border-red-500': errors.description }"
                             rows="3"
                         ></textarea>
+                        <ErrorMessage :errors="errors" field="description" />
                     </div>
 
                     <!-- Price Field -->
@@ -138,19 +142,26 @@
                             v-model="newProduct.price"
                             type="number"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.price }"
                             step="0.01"
                         />
+                        <ErrorMessage :errors="errors" field="price" />
                     </div>
 
                     <!-- Categories (Multi-Select) -->
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Categories</label>
-                        <select v-model="selectedCategories" class="w-full px-3 py-2 border rounded-lg" multiple>
+                        <select 
+                            v-model="selectedCategories" 
+                            class="w-full px-3 py-2 border rounded-lg" 
+                            :class="{ 'border-red-500': errors.category_ids }"
+                            multiple
+                        >
                             <option v-for="category in categories" :key="category.id" :value="category.id">
                                 {{ category.name }}
                             </option>
                         </select>
+                        <ErrorMessage :errors="errors" field="category_ids" />
                     </div>
 
 
@@ -161,8 +172,10 @@
                                 type="checkbox"
                                 v-model="newProduct.is_active"
                                 class="rounded text-blue-500"
+                                :class="{ 'border-red-500': errors.is_active }"
                             />
                             <span class="text-gray-700">Active</span>
+                            <ErrorMessage :errors="errors" field="is_active" />
                         </label>
                     </div>
 
@@ -176,6 +189,7 @@
                         @file-selected="handleFileSelected"
                         @file-removed="handleFileRemoved"
                     />
+                    <ErrorMessage :errors="errors" field="image" />
 
                     <!-- Form Actions -->
                     <div class="flex justify-end">
@@ -212,9 +226,10 @@
                             v-model="newProduct.name"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.name }"
                             @input="generateSlug"
                         />
+                        <ErrorMessage :errors="errors" field="name" />
                     </div>
 
                     <!-- Slug Field -->
@@ -224,8 +239,9 @@
                             v-model="newProduct.slug"
                             type="text"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.slug }"
                         />
+                        <ErrorMessage :errors="errors" field="slug" />
                     </div>
 
                     <!-- Description Field -->
@@ -234,8 +250,10 @@
                         <textarea
                             v-model="newProduct.description"
                             class="w-full px-3 py-2 border rounded-lg"
+                            :class="{ 'border-red-500': errors.description }"
                             rows="3"
                         ></textarea>
+                        <ErrorMessage :errors="errors" field="description" />
                     </div>
 
                     <!-- Price Field -->
@@ -245,19 +263,26 @@
                             v-model="newProduct.price"
                             type="number"
                             class="w-full px-3 py-2 border rounded-lg"
-                            required
+                            :class="{ 'border-red-500': errors.price }"
                             step="0.01"
                         />
+                        <ErrorMessage :errors="errors" field="price" />
                     </div>
 
                     <!-- Category Selection -->
                     <div class="mb-4">
                         <label class="block text-gray-700 mb-2">Categories</label>
-                        <select v-model="selectedCategories" class="w-full px-3 py-2 border rounded-lg" multiple>
+                        <select 
+                            v-model="selectedCategories" 
+                            class="w-full px-3 py-2 border rounded-lg"
+                            :class="{ 'border-red-500': errors.category_ids }"
+                            multiple
+                        >
                             <option v-for="category in categories" :key="category.id" :value="category.id">
                                 {{ category.name }}
                             </option>
                         </select>
+                        <ErrorMessage :errors="errors" field="category_ids" />
                     </div>
 
 
@@ -268,8 +293,10 @@
                                 type="checkbox"
                                 v-model="newProduct.is_active"
                                 class="rounded text-blue-500"
+                                :class="{ 'border-red-500': errors.is_active }"
                             />
                             <span class="text-gray-700">Active</span>
+                            <ErrorMessage :errors="errors" field="is_active" />
                         </label>
                     </div>
 
@@ -284,6 +311,7 @@
                         @file-selected="handleFileSelected"
                         @file-removed="handleFileRemoved"
                     />
+                    <ErrorMessage :errors="errors" field="image" />
 
                     <!-- Form Actions -->
                     <div class="flex justify-end">
@@ -310,15 +338,27 @@
 <script setup>
     import usePaginationFetcher from "@/composables/usePaginationFetcher";
     import PaginationControls from "@/views/components/PaginationControls.vue";
-    import { ref, onMounted, onBeforeUnmount, nextTick, watch } from "vue";
+    import { ref, onMounted } from "vue";
     import axios from "axios";
     import { useToast } from "vue-toastification";
     import ImageUpload from "@/views/components/Form/ImageUpload.vue";
-    import Swal from "sweetalert2";
-    import "sweetalert2/src/sweetalert2.scss";
+    import { useFormValidation } from "@/composables/useFormValidation";
+    import ErrorMessage from "@/views/components/ErrorMessage.vue";
 
     const categories = ref([]);
     const selectedCategories = ref([]);
+
+    const initialFormState = {
+        name: "",
+        slug: "",
+        price: 0,
+        is_active: true,
+        image: null,
+        description: "",
+        category_ids: [],
+    }
+
+    const { form, errors, clearErrors, handleApiError } = useFormValidation(initialFormState);
 
     const loadCategories = async () => {
         try {
@@ -371,7 +411,8 @@
     const openCreateModal = () => {
         isCreateModalOpen.value = true;
         selectedCategories.value = [];
-        loadCategories(); // Fetch categories when opening the modal
+        loadCategories();
+        clearErrors();
     };
 
     const closeCreateModal = () => {
@@ -385,10 +426,12 @@
             description: "",
             category_ids: [],
         };
+        clearErrors();
     };
 
     const createProduct = async () => {
         try {
+            clearErrors();
             const formData = new FormData();
             formData.append("name", newProduct.value.name);
             formData.append("slug", newProduct.value.slug);
@@ -412,8 +455,7 @@
             closeCreateModal();
             fetchData();
         } catch (error) {
-            toast.error("Error creating product");
-            console.error(error);
+            handleApiError(error); 
         }
     };
 
@@ -436,12 +478,13 @@
         };
         isEditModalOpen.value = true;
         selectedCategories.value = product.categories.map(c => c.id)
-        loadCategories()
+        loadCategories();
+        clearErrors();
     };
-
 
     const updateProduct = async () => {
         try {
+            clearErrors();
             const formData = new FormData();
             formData.append("name", newProduct.value.name);
             formData.append("slug", newProduct.value.slug);
@@ -468,8 +511,7 @@
             closeEditModal();
             fetchData();
         } catch (error) {
-            toast.error("Error updating product");
-            console.error(error);
+            handleApiError(error);
         }
     };
 
@@ -511,6 +553,7 @@
             image: null,
             category_ids: [],
         };
+        clearErrors();
     };
 
     // File Handling

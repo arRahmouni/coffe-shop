@@ -7,6 +7,8 @@ import Toast from 'vue-toastification';
 import 'vue-toastification/dist/index.css';
 import router from './router/index.js';
 import axios from "axios";
+import Swal from 'sweetalert2';
+import 'sweetalert2/src/sweetalert2.scss';
 
 axios.defaults.withCredentials = true; // Send cookies with every request
 axios.defaults.baseURL = "http://127.0.0.1:8000/api/v1"; // Set the base URL for API requests
