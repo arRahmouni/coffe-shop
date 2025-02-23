@@ -21,7 +21,7 @@ class StoreProductRequest extends BaseApiRequest
             'slug'           => ['required', 'string', 'max:255'],
             'description'    => ['required', 'string', 'max:2000'],
             'image'          => [$this->isCreate() ? 'required' : 'nullable', File::image()->max('10mb')],
-            'price'          => ['required', 'numeric', 'min:0', 'max:99999999.99'],
+            'price'          => ['required', 'numeric', 'min:1', 'max:99999999.99'],
             'is_active'      => ['required', 'boolean'],
             'category_ids'   => ['required', 'array', 'min:1'],
             'category_ids.*' => ['required' , Rule::exists('categories', 'id')->where('user_id', request()->user()->id)],

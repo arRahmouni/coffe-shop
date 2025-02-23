@@ -44,7 +44,6 @@ class Product extends Model
         return $this->belongsToMany(Category::class);
     }
 
-
     public function getDataForApi($id, $isCollection = false) : mixed
     {
         $modelCollection = $this->whereHas('categories', fn($query) => $query->whereBelongsTo(request()->user()));

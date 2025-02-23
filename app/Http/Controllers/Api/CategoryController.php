@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api;
 
 use app\Http\Controllers\Api\BaseApiController;
 use App\Http\Requests\StoreCategoryRequest;

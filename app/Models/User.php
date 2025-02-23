@@ -51,6 +51,16 @@ class User extends Authenticatable implements MustVerifyEmail
         ];
     }
 
+    public function categories()
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function products()
+    {
+        return $this->hasManyThrough(Product::class, Category::class);
+    }
+
     public function scopeVerified($query)
     {
         return $query->whereNotNull('email_verified_at');

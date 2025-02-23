@@ -3,8 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use app\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ProductController;
+use App\Http\Controllers\Api\ProductController;
+use App\Http\Controllers\Api\CategoryController;
 
 Route::controller(AuthController::class)->group(function () {
     Route::post('register'              , 'register');
@@ -14,9 +14,8 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('email/resend'          , 'resendVerificationEmail')->middleware(['throttle:3,1']);
     Route::post('forgot-password'       , 'sendResetPasswordLink');//->middleware(['throttle:3,1']);
     Route::post('reset-password'        , 'resetPassword');
+    Route::get('user'                   , 'showUserInfo')->middleware('auth:sanctum');
 });
-
-Route::get('user', [UserController::class, 'show'])->middleware('auth:sanctum');
 
 Route::controller(CategoryController::class)->prefix('categories')->middleware('auth:sanctum')->group(function () {
     Route::get('/'          , 'index');
