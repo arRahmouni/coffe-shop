@@ -52,7 +52,7 @@
     import { reactive, watch, ref  } from "vue";
     import { useFormValidation } from "@/composables/useFormValidation";
     import { useAuthApi } from '@/composables/useAuthApi'; // Import the updated composable
-    import ErrorMessage from "../components/ErrorMessage.vue";
+    import ErrorMessage from "@/views/components/ErrorMessage.vue";
 
     // Reactive form state
     const initialFormState  = reactive({

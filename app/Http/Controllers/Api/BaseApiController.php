@@ -28,14 +28,12 @@ class BaseApiController extends Controller
     public function __construct()
     {
         $this->data['model_plural']   = Str::plural(Str::snake(class_basename($this->model)));
-        $this->data['model_singular'] = Str::singular(Str::snake(class_basename($this->model)));
     }
-
 
     /**
      * Send a listing of the resource to ajax.
      */
-    public function list(Request $request)
+    public function index(Request $request)
     {
         $this->data['model']    = $this->model->getDataForApi($request->all(), isCollection: true);
         $this->data['page']     = $request->has('page') ? $request->page : 1;
@@ -46,8 +44,8 @@ class BaseApiController extends Controller
         $this->data['paginate'] = new PaginateResource($this->data['data']);
 
         return sendApiSuccessResponse(data: [
-            $this->data['model_plural'] => $this->modelResource::collection($this->data['data']),
-            'paginate'                  => $this->data['paginate'],
+            'data'      => $this->modelResource::collection($this->data['data']),
+            'paginate'  => $this->data['paginate'],
         ]);
     }
 
@@ -59,7 +57,7 @@ class BaseApiController extends Controller
         $this->data['model'] = $this->model->getDataForApi($request->all(), isCollection: false);
 
         return sendApiSuccessResponse(data: [
-            $this->data['model_singular'] => new $this->modelResource($this->data['model']),
+            'data' => new $this->modelResource($this->data['model']),
         ]);
     }
 
@@ -77,7 +75,7 @@ class BaseApiController extends Controller
         }
 
         return sendApiSuccessResponse('created_successfully', data: [
-            $this->data['model_singular'] => new $this->modelResource($result),
+            'data' => new $this->modelResource($result),
         ]);
     }
 
@@ -88,12 +86,12 @@ class BaseApiController extends Controller
     {
         app($this->modelRequest);
 
-        $this->data['model'] = $this->model->getDataForApi($request->all(), isCollection: false);
+        $this->data['model'] = $this->model->getDataForApi($request->id, isCollection: false);
 
         $this->modelService->updateModel($this->data['model'], app($this->modelRequest)->validated());
 
         return sendApiSuccessResponse('updated_successfully', [
-            $this->data['model_singular'] => new $this->modelResource($this->data['model']),
+            'data' => new $this->modelResource($this->data['model']),
         ]);
     }
 
@@ -102,7 +100,7 @@ class BaseApiController extends Controller
      */
     public function destroy(Request $request)
     {
-        $this->data['model'] = $this->model->getDataForApi($request->all(), isCollection: false);
+        $this->data['model'] = $this->model->getDataForApi($request->id, isCollection: false);
 
         $this->data['model']->delete();
 
