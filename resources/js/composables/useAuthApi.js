@@ -27,7 +27,7 @@ export const useAuthApi = () => {
                     localStorage.setItem('registered_email', formData.email);
 
                     router.push({
-                        path: '/email-verification',
+                        path: '/admin/email-verification',
                         query: { email: formData.email }
                     });
 
@@ -43,7 +43,7 @@ export const useAuthApi = () => {
                     "Authorization"
                 ] = `Bearer ${response.data.data.token.access_token}`;
 
-                router.push('/dashboard');
+                router.push('/admin/dashboard');
 
             } catch (err) {
                 error.value = err;
@@ -51,7 +51,7 @@ export const useAuthApi = () => {
                     localStorage.setItem('registered_email', formData.email);
 
                     router.push({
-                        path: '/email-verification',
+                        path: '/admin/email-verification',
                         query: { email: formData.email }
                     });
                 }
@@ -107,7 +107,7 @@ export const useAuthApi = () => {
             messageClass.value   = "bg-green-100 text-green-800";
             toast.success("Password reset link sent to your email!");
 
-            router.push("/login");
+            router.push("/admin/login");
         } catch (err) {
             error.value = err;
             message.value =
@@ -138,7 +138,7 @@ export const useAuthApi = () => {
             messageClass.value = "bg-green-100 text-green-800";
             toast.success("Password reset successfully!");
 
-            router.push("/login");
+            router.push("/admin/login");
         } catch (err) {
             // Handle errors
             error.value = err;

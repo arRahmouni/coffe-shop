@@ -73,10 +73,10 @@ class AuthController extends BaseApiController
         $response = $this->authService->verifyEmail($token);
 
         if(! $response['success']) {
-            return redirect('/email-verification-failed');
+            return redirect('/admin/email-verification-failed');
         }
 
-        return redirect('/email-verification-success');
+        return redirect('/admin/email-verification-success');
     }
 
     public function resendVerificationEmail(Request $request)

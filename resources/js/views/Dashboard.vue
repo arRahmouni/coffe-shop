@@ -125,7 +125,7 @@
             localStorage.removeItem("authToken");
             delete axios.defaults.headers.common["Authorization"];
             toast.success("Logged out successfully!");
-            router.push("/login");
+            router.push("/admin/login");
         } catch (error) {
             toast.error("An error occurred during logout. Please try again.");
         }

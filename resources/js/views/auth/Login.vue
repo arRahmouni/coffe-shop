@@ -59,14 +59,14 @@
             <!-- Register Link -->
             <p class="mt-4 text-center text-gray-600">
                 Don't have an account?
-                <router-link to="/register" class="text-blue-600 hover:text-blue-800">
+                <router-link to="/admin/register" class="text-blue-600 hover:text-blue-800">
                     Register
                 </router-link>
             </p>
 
             <!-- Forgot Password Link -->
             <p class="mt-4 text-center text-gray-600">
-                <router-link to="/forgot-password" class="text-blue-600 hover:text-blue-800">
+                <router-link to="/admin/forgot-password" class="text-blue-600 hover:text-blue-800">
                     Forgot Password?
                 </router-link>
             </p>

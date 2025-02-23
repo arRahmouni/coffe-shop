@@ -32,7 +32,7 @@
                 </button>
 
                 <router-link
-                    to="/login"
+                    to="/admin/login"
                     class="text-blue-600 hover:text-blue-800 text-sm"
                 >
                     Back to Login

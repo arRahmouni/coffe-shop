@@ -107,7 +107,7 @@
             <!-- Login Link -->
             <p class="mt-4 text-center text-gray-600">
                 Already have an account?
-                <router-link to="/login" class="text-blue-600 hover:text-blue-800">
+                <router-link to="/admin/login" class="text-blue-600 hover:text-blue-800">
                     Login
                 </router-link>
             </p>

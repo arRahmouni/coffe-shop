@@ -9,21 +9,21 @@ import Products from '../views/dashboard/Products.vue';
 
 const routes = [
     {
-        path: '/login',
+        path: '/admin/login',
         component: Login,
         meta: { guest: true }
     },
     {
-        path: '/register',
+        path: '/admin/register',
         component: Register,
         meta: { guest: true }
     },
     {
-        path: '/:pathMatch(.*)*',
+        path: '/admin/:pathMatch(.*)*',
         component: NotFound
     },
     {
-        path: '/dashboard',
+        path: '/admin/dashboard',
         component: Dashboard,
         meta: { requiresAuth: true },
         children: [
@@ -45,27 +45,27 @@ const routes = [
         ]
     },
     {
-        path: '/email-verification',
+        path: '/admin/email-verification',
         component: () => import('../views/auth/EmailVerify.vue'),
         meta: { guest: true }
     },
     {
-        path: '/email-verification-success',
+        path: '/admin/email-verification-success',
         component: () => import('../views/auth/EmailVerifySuccess.vue'),
         meta: { guest: true }
     },
     {
-        path: '/email-verification-failed',
+        path: '/admin/email-verification-failed',
         component: () => import('../views/auth/EmailVerifyFailure.vue'),
         meta: { guest: true }
     },
     {
-        path: '/forgot-password',
+        path: '/admin/forgot-password',
         component: () => import('../views/auth/ForgotPassword.vue'),
         meta: { guest: true }
     },
     {
-        path: '/reset-password',
+        path: '/admin/reset-password',
         component: () => import('../views/auth/ResetPassword.vue'),
         meta: { guest: true },
         props: (route) => ({
@@ -93,10 +93,10 @@ router.beforeEach(async (to, from, next) => {
             } catch (error) {
                 localStorage.removeItem('authToken');
                 delete axios.defaults.headers.common['Authorization'];
-                next('/login');
+                next('/admin/login');
             }
         } else {
-            next('/login');
+            next('/admin/login');
         }
     } else if (to.meta.guest) {
         const token = localStorage.getItem('authToken');
@@ -106,7 +106,7 @@ router.beforeEach(async (to, from, next) => {
 
             try {
                 await axios.get('/user');
-                next('/dashboard');
+                next('/admin/dashboard');
             } catch (error) {
                 localStorage.removeItem('authToken');
                 delete axios.defaults.headers.common['Authorization'];
